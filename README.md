@@ -8,8 +8,10 @@ loaded at runtime by `LH_SourcesHub.lua` exactly the way Airflow-UI's
 game:HttpGet(url) -> disk cache -> loadstring -> call
 ```
 
-The hub holds **no** UI body of its own; these files are the source of truth for
-every hand-made Linkhive surface.
+The hub holds **no** UI body of its own; these files are what the runtime loads.
+The **working source** is kept in the Linkhive-scripts repo at
+`StealAnEgg/ui/*.luau` (edited and reviewed there); this repository is the
+**published mirror** the hub fetches from — keep the two byte-identical.
 
 ## Modules (`ui/`)
 
@@ -39,12 +41,14 @@ https://raw.githubusercontent.com/afkar-gg/lhui/refs/heads/main/ui/
 
 ## Keep in sync
 
-These files are the source of truth. When a UI behaviour changes:
+The working source is `StealAnEgg/ui/*.luau` in the Linkhive-scripts repo; this
+repository mirrors it. When a UI behaviour changes:
 
-1. Edit the module here — never re-inline UI into `LH_SourcesHub.lua`.
-2. Keep the module's `ctx` contract, the hub call site that builds that `ctx`,
+1. Edit the module in the working source — never re-inline UI into `LH_SourcesHub.lua`.
+2. Copy the updated file here (`ui/`) and push, so the runtime picks it up.
+3. Keep the module's `ctx` contract, the hub call site that builds that `ctx`,
    `LH_SourcesHub.comments.md` and `AGENTS.md` consistent.
-3. Adding / renaming a module is a three-point edit: the file here, the
+4. Adding / renaming a module is a three-point edit: the file here, the
    `LH_UI_FILES` entry, and the matching `loadUI(...)` call site.
-4. Preserve the `--!mv:omit` directives on extracted functions.
-5. Re-verify with `luau-compile --binary` (exit 0) plus the adapter smoke test.
+5. Preserve the `--!mv:omit` directives on extracted functions.
+6. Re-verify with `luau-compile --binary` (exit 0) plus the adapter smoke test.
