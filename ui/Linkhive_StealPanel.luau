@@ -2170,9 +2170,9 @@ return function(ctx)
 				return
 			end
 
-			if flag7 then
+			if flag7 or panelOpenState:Get() == true then
 				flag7 = false
-				task.spawn(openStealPanel)
+				openStealPanel(false)
 			end
 
 			table.insert(stealPanelConnections, panelOpenState:Subscribe(function(on)
@@ -2265,25 +2265,19 @@ return function(ctx)
 
 			local methodHandle = saeApi.SafeCarry.MethodHandle
 			local savedMode = methodHandle and type(methodHandle.Get) == "function" and methodHandle.Get() or "Delivery Stop"
-			saeApi.Method.Apply(savedMode)
+			pcall(saeApi.Method.Apply, savedMode)
 			saeApi.MethodReady = true
 
-			-- The Steal Panel is the hub's primary surface, so it has to come up on
-			-- every execution. Its open/closed flag is persisted between sessions,
-			-- and this used to bail out whenever the stored flag was false -- one
-			-- close (or a stale config) then hid the panel forever. Force it open.
 			panelOpenState:Set(true)
 
 			if not (flag4 and windowFrame) then
-				-- The body has not been built yet, or an earlier build failed (for
-				-- example when the camera was not ready). Rebuild it now so the panel
-				-- really appears instead of leaving a half-initialised session.
 				flag4 = false
+				flag7 = true
 				openStealPanelImpl()
 			end
 
 			if flag4 and windowFrame and not flag6 then
-				task.spawn(openStealPanel)
+				openStealPanel(true)
 			end
 		end
 	end
