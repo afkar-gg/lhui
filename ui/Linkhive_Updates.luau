@@ -1,18 +1,10 @@
 return {
 	Version = "1.0.0",
-	Released = "2026-10-16",
+	Released = "2026-02-15",
 	Changes = {
 		{
-			Type = "Initial",
-			Text = "Initial release of the modular Linkhive UI toolkit.",
+			Type = "Initial release",
+			Text = "Linkhive Steal an Egg script has been released! expect alot of bugs currently hehe",
 		},
-		{
-			Type = "Added",
-			Text = "Home, Developer, Webhook, and Updates tabs.",
-		},
-		{
-			Type = "Added",
-			Text = "Modular Steal Panel, ESP, Anti-Guard, Overlays, and Dock.",
-		},
-	},
+    }
 }
