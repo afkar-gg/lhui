@@ -1,29 +1,3 @@
---[[
-	Linkhive_UI.luau — the Linkhive widget toolkit.
-
-	This is the hand-drawn drawing layer the hub used to keep inside
-	LH.lua: the "Beeswarm" palette plus the small primitives
-	(corner / stroke / label / liveGrad / addLivingStroke / makeSwitch /
-	compatRow / drag) that every Linkhive-owned surface is painted with.
-
-	It is fetched remotely by LH.lua exactly like Airflow-UI's
-	Source.luau is — game:HttpGet -> disk cache -> loadstring -> module.
-
-	Contract: `return function(ctx) -> table`
-		ctx.lib        the hub library table (LinkhiveLib)
-		ctx.services   { TweenService, UserInputService, HttpService, Players, CoreGui }
-		ctx.gui        the overlay ScreenGui
-
-	Returns the palette `C` and the primitives, so the hub can hand the same
-	table to every other UI module and keep `LinkhiveLib.UI` shaped as before.
-
-	----------------------------------------------------------------------
-	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
-	sync, then re-verify with luau-compile + the adapter smoke test.
-]]
-
 return function(ctx)
 	ctx = ctx or {}
 
@@ -37,11 +11,6 @@ return function(ctx)
 
 	local c3 = Color3.fromRGB
 
-	-- ── Linkhive "Beeswarm" palette ──────────────────────────────────────────
-	-- The window is painted the logo's own yellow, rgb(255,199,0), so the
-	-- chrome is BRIGHT and every foreground is dark. Surfaces are steps of the
-	-- same hue; the accent is a dark amber, because a yellow accent would
-	-- vanish against a yellow window.
 	local C = {
 		BG       = Color3.fromHex("#FFC700"),
 		HEADER   = Color3.fromHex("#FFC700"),
@@ -70,22 +39,18 @@ return function(ctx)
 	C.ACCENT, C.ACCENT2 = C.MOON, C.MOON2
 	C.TRACKOFF = C.OFF_BG
 
-	-- ── primitives ───────────────────────────────────────────────────────────
-	--!mv:omit
 	local function corner(inst, r)
 		local c = Instance.new("UICorner", inst)
 		c.CornerRadius = UDim.new(0, r or 8)
 		return c
 	end
 
-	--!mv:omit
 	local function stroke(inst, col, th, tr)
 		local s = Instance.new("UIStroke", inst)
 		s.Color = col or C.BORDER; s.Thickness = th or 1; s.Transparency = tr or 0
 		return s
 	end
 
-	--!mv:omit
 	local function label(parent, text, size, color, font, ax, ay)
 		local l = Instance.new("TextLabel", parent)
 		l.BackgroundTransparency = 1
@@ -98,7 +63,6 @@ return function(ctx)
 		return l
 	end
 
-	--!mv:omit
 	local function liveGrad(inst)
 		local old = inst:FindFirstChild("TextGrad")
 		if old then old:Destroy() end
@@ -114,9 +78,6 @@ return function(ctx)
 		return g
 	end
 
-	-- amber <-> dark amber: on the bright window a cream-on-cream stroke would
-	-- be invisible, so the "living" shimmer runs in the dark steps.
-	--!mv:omit
 	local function addLivingStroke(parent, thickness)
 		local s = Instance.new("UIStroke", parent)
 		s.Color = C.DEEP3; s.Thickness = thickness or 1.5
@@ -133,7 +94,6 @@ return function(ctx)
 		return s
 	end
 
-	--!mv:omit
 	local function makeSwitch(parent, initial)
 		local pill = Instance.new("Frame", parent)
 		pill.Size = UDim2.new(0, 40, 0, 20)
@@ -167,7 +127,6 @@ return function(ctx)
 		return game:GetService("CoreGui")
 	end
 
-	--!mv:omit
 	local function drag(handle, target)
 		local dragging, dragStart, startPos = false, nil, nil
 		handle.InputBegan:Connect(function(inp)
@@ -189,8 +148,6 @@ return function(ctx)
 		end)
 	end
 
-	-- ---- compat row (only used by the hub's own tool panels) ----
-	--!mv:omit
 	local function compatRow(section, cfg, height)
 		section.count = section.count + 1
 		local holder = Instance.new("Frame", section.body)
@@ -212,7 +169,6 @@ return function(ctx)
 		return row, holder
 	end
 
-	--!mv:omit
 	local function newSignalList()
 		local list = {}
 		return {

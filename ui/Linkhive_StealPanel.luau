@@ -1,41 +1,3 @@
---[[
-	Linkhive_StealPanel.luau — the Steal Panel.
-
-	The floating "Steal Panel" window: the pinned toolbar (Auto Steal, Mode,
-	guide), the strongest-egg hero card, the trip strip and the sortable field
-	egg list, plus the tool-window chrome and compat slider sections it sits in.
-
-	Everything the panel needs from the hub arrives through ctx; nothing is
-	drawn by the hub itself. Fetched remotely by LH.lua exactly like
-	Airflow-UI's Source.luau: HttpGet -> disk cache -> loadstring.
-
-	Contract: `return function(ctx) -> table`
-		ctx.ui                    the Linkhive_UI toolkit (palette + primitives)
-		ctx.gui                   the overlay ScreenGui
-		ctx.services              { TweenService, UserInputService }
-		ctx.store / ctx.setStored persisted settings (slider keys)
-		ctx.pathKey               key builder for stored values
-		ctx.LinkhiveLib           the hub library table
-		ctx.addCleanup            hub cleanup registry
-		ctx.autoStealToggle       the Auto Steal toggle handle
-		ctx.stealPanelToggle      the Steal Panel toggle handle
-		ctx.espModule             the ESP module table
-		ctx.generateRandomId      id helper
-		ctx.linkhiveWindow        the main Airflow window
-		ctx.localPlayer           the local player
-		ctx.networking            ReplicatedStorage networking folder
-		ctx.saeApi                the hub's game API table
-		ctx.stealPriority / ctx.stealPriorityOptions
-		ctx.tbl                   cached ReplicatedStorage modules
-
-	Returns { newToolWindow, ensureStealPanel }.
-
-	----------------------------------------------------------------------
-	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
-	sync, then re-verify with luau-compile + the adapter smoke test.
-]]
 
 return function(ctx)
 	ctx = ctx or {}
@@ -71,10 +33,6 @@ return function(ctx)
 	local stealPriorityOptions = ctx.stealPriorityOptions
 	local tbl = ctx.tbl
 
-	-- ── floating tool window (the panel's own chrome) ────────────────────────
-	-- The hub's tool windows are self-contained: a draggable Linkhive card with
-	-- its own scrolling page and a small compat Tab/Section layer so the panel
-	-- can drop sliders into collapsible groups.
 	local compatSection = {}
 	compatSection.__index = compatSection
 
@@ -82,7 +40,6 @@ return function(ctx)
 		return cfg.Expanded ~= false
 	end
 
-	--!mv:omit
 	function compatSection:CreateSlider(cfg)
 		local key = pathKey(self, cfg.Name)
 		local minV, maxV = tonumber(cfg.Min) or 0, tonumber(cfg.Max) or 100
@@ -159,7 +116,6 @@ return function(ctx)
 	local compatTab = {}
 	compatTab.__index = compatTab
 
-	--!mv:omit
 	function compatTab:CreateSection(cfg)
 		local sec = setmetatable({
 			name = cfg.Name, tab = self, window = self.window, mode = "compat", count = 0,
@@ -197,7 +153,6 @@ return function(ctx)
 		end
 	end
 
-	--!mv:omit
 	local function newToolWindow(cfg)
 		local w = tonumber(cfg.w) or 262
 		local h = tonumber(cfg.h) or 410
@@ -720,7 +675,6 @@ return function(ctx)
 
 	local applyStyle
 
-	--!mv:omit
 	local function applyStyleImpl(widget, style)
 		if not widget or widget.Style == style then
 			return
@@ -756,7 +710,6 @@ return function(ctx)
 
 	local setupHoverFx
 
-	--!mv:omit
 	local function setupHoverFxImpl(buttonWidget)
 		if not buttonWidget then
 			return
@@ -799,7 +752,6 @@ return function(ctx)
 		local tweenInfo8 = TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
 		local activeShimmerTweens = {}
 
-		--!mv:omit
 		local function playShimmerImpl(styledWidget)
 			for _, shimmerTween in ipairs(activeShimmerTweens) do
 				pcall(function()
@@ -921,14 +873,12 @@ return function(ctx)
 
 		local unusedScanDelay = 0.106
 
-		--!mv:omit
 		local function setButtonVisible(targetRow, visible)
 			if targetRow and targetRow.Button.Visible ~= visible then
 				targetRow.Button.Visible = visible
 			end
 		end
 
-		--!mv:omit
 		local function updateRowRank(row, rank, badgeStyle, totalCount)
 			local visible = rank ~= nil
 			row.Rank = rank
@@ -1106,7 +1056,6 @@ return function(ctx)
 			end
 		end
 
-		--!mv:omit
 		local function mkBtn(parent, text, size, pos, anchor, style)
 			local U = ui
 			local button = Instance.new("TextButton")
@@ -1165,7 +1114,6 @@ return function(ctx)
 			return w
 		end
 
-		--!mv:omit
 		local function createRow(uid)
 			local U = ui
 			local row = Instance.new("Frame")
@@ -1559,7 +1507,6 @@ return function(ctx)
 			win.SetOpen(false)
 		end
 
-		--!mv:omit
 		local function buildStealPanel()
 			local U = ui
 			win = newToolWindow({
@@ -1614,7 +1561,6 @@ return function(ctx)
 			imageLabel = heroIcon
 			saeApi.Hero = { Name = heroName, Value = heroValue }
 
-			--!mv:omit
 			local function makeSwitchButton(text, pos, onChange)
 				local btn = mkBtn(bar, text .. ": OFF", UDim2.new(0.5, -11, 0, 26), pos, nil, stealStyles.Queued)
 				btn.Label.TextSize = 10
@@ -1671,7 +1617,6 @@ return function(ctx)
 			modeBadgeHint.Position = UDim2.new(0, 5, 0, 11)
 			modeBadgeHint.TextSize = 7
 
-			--!mv:omit
 			local function layoutMode()
 				if modeBadge.Visible then
 					modeButton.Button.Size = UDim2.new(0, 112, 0, 22)
@@ -1680,7 +1625,6 @@ return function(ctx)
 				end
 			end
 
-			--!mv:omit
 			local function hideGuide()
 				modeBadge.Visible = false
 				layoutMode()
@@ -1731,13 +1675,11 @@ return function(ctx)
 			local guideClose = mkBtn(guideCard, "Got it", UDim2.new(1, -16, 0, 24), UDim2.new(0, 8, 1, -30), nil, stealStyles.Steal)
 			guideClose.Label.TextSize = 10
 
-			--!mv:omit
 			local function openGuide()
 				guideCard.Visible = true
 				page.ScrollingEnabled = false
 			end
 
-			--!mv:omit
 			local function closeGuide()
 				guideCard.Visible = false
 				page.ScrollingEnabled = true
@@ -1775,7 +1717,6 @@ return function(ctx)
 			local branch = nil
 			local branchButtons = {}
 
-			--!mv:omit
 			local function refreshBranch()
 				for _, entry in ipairs(branchButtons) do
 					applyStyle(entry.Button, entry.Name == entry.Group.Current() and stealStyles.Steal or stealStyles.Queued)
@@ -1847,7 +1788,6 @@ return function(ctx)
 
 			local lastSortCycleTime = 0
 
-			--!mv:omit
 			local function cycleSort()
 				if os.clock() - lastSortCycleTime < 0.25 then
 					return
@@ -1946,7 +1886,6 @@ return function(ctx)
 
 			local shownStops = -1
 
-			--!mv:omit
 			local function updateStrip()
 				local now = os.clock()
 				local trip = saeApi.Trip
@@ -2004,7 +1943,6 @@ return function(ctx)
 
 			local speed = tab:CreateSection({ Name = "Speed", Expanded = false })
 
-			--!mv:omit
 			local function linkSlider(name, minV, maxV, handle, unit, fallback)
 				local start = fallback or 100
 
@@ -2063,7 +2001,6 @@ return function(ctx)
 			emptyLabel.TextSize = 10.5
 			emptyLabel.LayoutOrder = -1
 
-			--!mv:omit
 			local function refreshEmpty()
 				local count = 0
 
@@ -2108,7 +2045,6 @@ return function(ctx)
 			return true
 		end
 
-		--!mv:omit
 		local function teardownStealPanel()
 			if not flag4 then
 				return
@@ -2158,7 +2094,6 @@ return function(ctx)
 			hudRefs = nil
 		end
 
-		--!mv:omit
 		local function openStealPanelImpl()
 			if flag4 then
 				return
@@ -2303,7 +2238,6 @@ return function(ctx)
 		end
 	end
 
-	-- the panel builds itself on the first frame, exactly as it used to
 	task.defer(ensureStealPanel)
 
 	return { newToolWindow = newToolWindow, ensureStealPanel = ensureStealPanel }

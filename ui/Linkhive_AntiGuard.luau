@@ -1,39 +1,3 @@
---[[
-	Linkhive_AntiGuard.luau -- the floating Anti-Guard pill.
-
-	A small always-on-top window pinned above the hotbar: a round toggle, a
-	gradient border that rotates while a carry is in flight, and a one-shot
-	"flash" colour used by the carry watch to signal good / bad / work states.
-
-	This file was extracted verbatim from LH.lua (the createInstance /
-	tweenInstance primitives, the ScreenGui -> Frame -> Frame2 -> Frame3 tree,
-	render / setFlashRequest / repositionPanel / renderAntiGuard). It is fetched
-	remotely exactly like Airflow-UI's Source.luau -- game:HttpGet -> disk cache
-	-> loadstring -- so the hub no longer builds this window locally.
-
-	Contract: `return function(ctx) -> table`
-		ctx.randomName      () -> string      random instance-name generator
-		ctx.hui             Instance          gethui() (or CoreGui)
-		ctx.colorPalette    table             the Anti-Guard palette (shared, mutated by theme hooks)
-		ctx.antiGuard       table             the shared saeApi.AntiGuard table (this module fills .Render / .ShowPanel)
-		ctx.guardConnections table            shared connection sink (filled here, drained by the carry watch)
-		ctx.panelHeight     number            panel height in px
-		ctx.carryState      table             shared carry state (FlashRequest / FlashUntil / Active)
-		ctx.isGuardArmed    () -> boolean     reads the hub's mutable `flag4` latch
-		ctx.LinkhiveLib     table             hub library (NoAnim, ThemeHooks, RunThemeHooksFrom)
-		ctx.localPlayer     Instance          Players.LocalPlayer
-		ctx.services        { RunService, TweenService, GuiService, StarterGui, CoreGui, UserInputService }
-
-	Returns { Render, SetFlash, ScreenGui, Frame, Frame2, Tween }.
-	The hub rebinds `setFlashRequest` and `ScreenGui` from this table so the
-	carry-watch logic below it keeps working unchanged.
-
-	----------------------------------------------------------------------
-	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
-	sync, then re-verify with luau-compile + the adapter smoke test.
-]]
 
 return function(ctx)
 	ctx = ctx or {}
@@ -64,7 +28,6 @@ return function(ctx)
 
 local createInstance
 
---!mv:omit
 local function createInstanceImpl(className, parent, instanceProperties)
 	local instance = Instance.new(className)
 	instance.Name = randomName()
@@ -82,7 +45,6 @@ createInstance = createInstanceImpl
 
 local tweenInstance
 
---!mv:omit
 local function tweenInstanceImpl(tweenTarget, tweenDuration, tweenGoal, easingStyle)
 	local ok, result = pcall(function()
 		local tweenService = TweenService
@@ -227,7 +189,6 @@ do
 
 	createInstance("UICorner", Frame4, { CornerRadius = UDim.new(1, 0) })
 
-	--!mv:omit
 	local function accentColor()
 		return antiGuard.Enabled and colorPalette.AccentA or colorPalette.Off
 	end
@@ -275,7 +236,6 @@ do
 		carryState.FlashRequest = { Color = flashColor, Hold = flashHold }
 	end
 
-	--!mv:omit
 	local function applyFlashRequest()
 		local flashRequest = carryState.FlashRequest
 		if not flashRequest then
@@ -301,7 +261,6 @@ do
 		end
 	end
 
-	--!mv:omit
 	local function setGuardHandle(handleEnabled)
 		local handle = antiGuard.Handle
 		if type(handle) ~= "table" then
@@ -367,7 +326,6 @@ do
 	local rotation = 0
 	local cachedBottomOffset = nil
 
-	--!mv:omit
 	local function isGuiVisible(visibilityGuiObject)
 		while visibilityGuiObject do
 			if visibilityGuiObject:IsA("GuiObject") and not visibilityGuiObject.Visible then
@@ -383,7 +341,6 @@ do
 		return false
 	end
 
-	--!mv:omit
 	local function getGuiInsetY()
 		local ok, result = pcall(function()
 			return GuiService:GetGuiInset().Y
@@ -392,7 +349,6 @@ do
 		return ok and result or 0
 	end
 
-	--!mv:omit
 	local function findTopButtonY(topButtonGuiObject)
 		local minY = nil
 
@@ -409,7 +365,6 @@ do
 		return minY or topButtonGuiObject.AbsolutePosition.Y
 	end
 
-	--!mv:omit
 	local function collectCoreGuiObjects()
 		table.clear(coreGuiObjects)
 		local playerGui = localPlayer:FindFirstChildOfClass("PlayerGui")
@@ -424,7 +379,6 @@ do
 		end
 	end
 
-	--!mv:omit
 	local function gatherTrackedGui()
 		local guiElements = {}
 
@@ -449,7 +403,6 @@ do
 		return guiElements
 	end
 
-	--!mv:omit
 	local function repositionPanel()
 		local currentCamera = workspace.CurrentCamera
 		if not currentCamera then
@@ -499,7 +452,6 @@ do
 		Frame.Position = UDim2.new(0.5, 0, 0, panelY)
 	end
 
-	--!mv:omit
 	local function renderAntiGuard(deltaTime)
 		applyFlashRequest()
 		huge += deltaTime

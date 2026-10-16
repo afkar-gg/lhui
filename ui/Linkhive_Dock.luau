@@ -1,29 +1,3 @@
---[[
-	Linkhive_Dock.luau — the floating quick-access dock.
-
-	Two draggable pills pinned to the top-right of the overlay ScreenGui:
-	one flips the "Player > Movement > Speed Boost" toggle, the other locks
-	the dock in place. Drawn with the Linkhive toolkit (Linkhive_UI.luau).
-
-	Fetched remotely by LH.lua: HttpGet -> disk cache -> loadstring.
-
-	Contract: `return function(ctx) -> table`
-		ctx.ui         the Linkhive_UI toolkit
-		ctx.gui        the overlay ScreenGui
-		ctx.services   { TweenService, UserInputService }
-		ctx.lib        the hub library table (for lib.handles)
-		ctx.store      the persisted settings table
-		ctx.setStored  function(key, value)
-
-	Returns { Build() }.
-
-	----------------------------------------------------------------------
-	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
-	sync, then re-verify with luau-compile + the adapter smoke test.
-]]
-
 return function(ctx)
 	ctx = ctx or {}
 	local ui = ctx.ui
@@ -39,7 +13,6 @@ return function(ctx)
 	local store = ctx.store or {}
 	local setStored = ctx.setStored or function() end
 
-	--!mv:omit
 	local function buildDock()
 		local SZ, GAP, TOP, RIGHT = 44, 8, 66, 10
 		local locked = store["Dock>Locked"] == true

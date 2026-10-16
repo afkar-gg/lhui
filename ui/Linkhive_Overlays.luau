@@ -1,28 +1,3 @@
---[[
-	Linkhive_Overlays.luau — the hub's own overlay panels.
-
-	Notifications, the transient banner, the red "risk" badge and the startup
-	splash card. Notifications are delegated to Airflow's toast stack (the
-	remote library the hub already fetches); the rest are drawn with the
-	Linkhive toolkit (Linkhive_UI.luau), on the shared overlay ScreenGui.
-
-	Fetched remotely by LH.lua: HttpGet -> disk cache -> loadstring.
-
-	Contract: `return function(ctx) -> table`
-		ctx.ui        the Linkhive_UI toolkit (C + primitives)
-		ctx.gui       the overlay ScreenGui
-		ctx.services  { TweenService, ... }
-		ctx.airflow   the Airflow library table (may be nil)
-
-	Returns { Notify, Banner, RiskBadge, Splash }.
-
-	----------------------------------------------------------------------
-	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
-	sync, then re-verify with luau-compile + the adapter smoke test.
-]]
-
 return function(ctx)
 	ctx = ctx or {}
 	local ui = ctx.ui
@@ -37,7 +12,6 @@ return function(ctx)
 	local TweenService = (ctx.services and ctx.services.TweenService) or game:GetService("TweenService")
 	local Airflow = ctx.airflow
 
-	--!mv:omit
 	local function notify(title, text, dur)
 		pcall(function()
 			if Airflow and Airflow.Notify then
@@ -53,7 +27,6 @@ return function(ctx)
 	end
 
 	local bannerToken = 0
-	--!mv:omit
 	local function banner(text, dur)
 		pcall(function()
 			bannerToken = bannerToken + 1
@@ -84,7 +57,6 @@ return function(ctx)
 	end
 
 	local riskToken = 0
-	--!mv:omit
 	local function riskBadge(title, text, dur)
 		pcall(function()
 			riskToken = riskToken + 1
@@ -127,7 +99,6 @@ return function(ctx)
 		end)
 	end
 
-	--!mv:omit
 	local function splash(lines)
 		pcall(function()
 			lines = lines or {}
