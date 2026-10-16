@@ -38,8 +38,8 @@
 
 	----------------------------------------------------------------------
 	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH_SourcesHub.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH_SourcesHub.lua), LH_SourcesHub.comments.md and AGENTS.md in
+	LH.lua (the hub keeps no UI body). After editing, keep the
+	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
 	sync, then re-verify with luau-compile + the adapter smoke test.
 ]]
 

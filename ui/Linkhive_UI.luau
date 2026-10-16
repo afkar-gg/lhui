@@ -2,11 +2,11 @@
 	Linkhive_UI.luau — the Linkhive widget toolkit.
 
 	This is the hand-drawn drawing layer the hub used to keep inside
-	LH_SourcesHub.lua: the "Beeswarm" palette plus the small primitives
+	LH.lua: the "Beeswarm" palette plus the small primitives
 	(corner / stroke / label / liveGrad / addLivingStroke / makeSwitch /
 	compatRow / drag) that every Linkhive-owned surface is painted with.
 
-	It is fetched remotely by LH_SourcesHub.lua exactly like Airflow-UI's
+	It is fetched remotely by LH.lua exactly like Airflow-UI's
 	Source.luau is — game:HttpGet -> disk cache -> loadstring -> module.
 
 	Contract: `return function(ctx) -> table`
@@ -19,8 +19,8 @@
 
 	----------------------------------------------------------------------
 	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH_SourcesHub.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH_SourcesHub.lua), LH_SourcesHub.comments.md and AGENTS.md in
+	LH.lua (the hub keeps no UI body). After editing, keep the
+	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
 	sync, then re-verify with luau-compile + the adapter smoke test.
 ]]
 

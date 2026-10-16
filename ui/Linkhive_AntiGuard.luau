@@ -5,7 +5,7 @@
 	gradient border that rotates while a carry is in flight, and a one-shot
 	"flash" colour used by the carry watch to signal good / bad / work states.
 
-	This file was extracted verbatim from LH_SourcesHub.lua (the createInstance /
+	This file was extracted verbatim from LH.lua (the createInstance /
 	tweenInstance primitives, the ScreenGui -> Frame -> Frame2 -> Frame3 tree,
 	render / setFlashRequest / repositionPanel / renderAntiGuard). It is fetched
 	remotely exactly like Airflow-UI's Source.luau -- game:HttpGet -> disk cache
@@ -30,8 +30,8 @@
 
 	----------------------------------------------------------------------
 	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH_SourcesHub.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH_SourcesHub.lua), LH_SourcesHub.comments.md and AGENTS.md in
+	LH.lua (the hub keeps no UI body). After editing, keep the
+	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
 	sync, then re-verify with luau-compile + the adapter smoke test.
 ]]
 

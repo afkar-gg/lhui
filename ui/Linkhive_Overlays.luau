@@ -6,7 +6,7 @@
 	remote library the hub already fetches); the rest are drawn with the
 	Linkhive toolkit (Linkhive_UI.luau), on the shared overlay ScreenGui.
 
-	Fetched remotely by LH_SourcesHub.lua: HttpGet -> disk cache -> loadstring.
+	Fetched remotely by LH.lua: HttpGet -> disk cache -> loadstring.
 
 	Contract: `return function(ctx) -> table`
 		ctx.ui        the Linkhive_UI toolkit (C + primitives)
@@ -18,8 +18,8 @@
 
 	----------------------------------------------------------------------
 	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH_SourcesHub.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH_SourcesHub.lua), LH_SourcesHub.comments.md and AGENTS.md in
+	LH.lua (the hub keeps no UI body). After editing, keep the
+	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
 	sync, then re-verify with luau-compile + the adapter smoke test.
 ]]
 

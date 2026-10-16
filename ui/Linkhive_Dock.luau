@@ -5,7 +5,7 @@
 	one flips the "Player > Movement > Speed Boost" toggle, the other locks
 	the dock in place. Drawn with the Linkhive toolkit (Linkhive_UI.luau).
 
-	Fetched remotely by LH_SourcesHub.lua: HttpGet -> disk cache -> loadstring.
+	Fetched remotely by LH.lua: HttpGet -> disk cache -> loadstring.
 
 	Contract: `return function(ctx) -> table`
 		ctx.ui         the Linkhive_UI toolkit
@@ -19,8 +19,8 @@
 
 	----------------------------------------------------------------------
 	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH_SourcesHub.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH_SourcesHub.lua), LH_SourcesHub.comments.md and AGENTS.md in
+	LH.lua (the hub keeps no UI body). After editing, keep the
+	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
 	sync, then re-verify with luau-compile + the adapter smoke test.
 ]]
 
