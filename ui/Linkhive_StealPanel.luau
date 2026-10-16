@@ -6,7 +6,7 @@
 	egg list, plus the tool-window chrome and compat slider sections it sits in.
 
 	Everything the panel needs from the hub arrives through ctx; nothing is
-	drawn by the hub itself. Fetched remotely by LH_SourcesHub.lua exactly like
+	drawn by the hub itself. Fetched remotely by LH.lua exactly like
 	Airflow-UI's Source.luau: HttpGet -> disk cache -> loadstring.
 
 	Contract: `return function(ctx) -> table`
@@ -18,6 +18,7 @@
 		ctx.LinkhiveLib           the hub library table
 		ctx.addCleanup            hub cleanup registry
 		ctx.autoStealToggle       the Auto Steal toggle handle
+		ctx.stealPanelToggle      the Steal Panel toggle handle
 		ctx.espModule             the ESP module table
 		ctx.generateRandomId      id helper
 		ctx.linkhiveWindow        the main Airflow window
@@ -31,8 +32,8 @@
 
 	----------------------------------------------------------------------
 	SOURCE OF TRUTH for this surface. Edit UI behaviour HERE, never in
-	LH_SourcesHub.lua (the hub keeps no UI body). After editing, keep the
-	hub ctx (LH_SourcesHub.lua), LH_SourcesHub.comments.md and AGENTS.md in
+	LH.lua (the hub keeps no UI body). After editing, keep the
+	hub ctx (LH.lua), LH.comments.md and AGENTS.md in
 	sync, then re-verify with luau-compile + the adapter smoke test.
 ]]
 
@@ -1529,7 +1530,7 @@ return function(ctx)
 		end
 
 		local function openStealPanel(selectTab)
-			if flag6 or not win then
+			if not win then
 				return
 			end
 			flag6 = true
@@ -1539,6 +1540,9 @@ return function(ctx)
 			end
 
 			win.SetOpen(true)
+			if win.frame then
+				win.frame.Visible = true
+			end
 			task.spawn(pcall, refreshPanel, panelGeneration)
 		end
 
@@ -1756,7 +1760,7 @@ return function(ctx)
 				task.delay(40, hideGuide)
 			end
 			layoutMode()
-			local modeStyles = { Normal = stealStyles.Queued, ["Instant TP"] = stealStyles.Steal, ["Delivery Stop"] = stealStyles.PriorityOn }
+			local modeStyles = { Normal = stealStyles.Queued, ["Instant TP"] = stealStyles.Steal, ["Delivery Stop"] = stealStyles.PriorityOn, ["Instant Steal"] = stealStyles.Steal }
 			local guardHandle = { Name = "Normal" }
 
 			function guardHandle:Set(name)
@@ -2224,7 +2228,7 @@ return function(ctx)
 						task.defer(function()
 							teardownStealPanel()
 
-							if saeApi.Toggle(nil, true) then
+							if saeApi.Toggle(ctx.stealPanelToggle or saeApi.StealPanelToggle, true) then
 								ensureStealPanel()
 							end
 						end)
@@ -2260,11 +2264,27 @@ return function(ctx)
 			imageLabel = nil
 		end)
 
+		saeApi.OpenStealPanel = function(show)
+			if show == false then
+				closeStealPanel(true, true)
+			else
+				if not (flag4 and windowFrame) then
+					flag4 = false
+					flag7 = true
+					openStealPanelImpl()
+				end
+				openStealPanel(true)
+				if win and win.frame then
+					win.frame.Visible = true
+				end
+			end
+		end
+
 		saeApi.RestoreStealPanel = function()
 			flagReady = true
 
 			local methodHandle = saeApi.SafeCarry.MethodHandle
-			local savedMode = methodHandle and type(methodHandle.Get) == "function" and methodHandle.Get() or "Delivery Stop"
+			local savedMode = methodHandle and type(methodHandle.Get) == "function" and methodHandle.Get() or "Instant Steal"
 			pcall(saeApi.Method.Apply, savedMode)
 			saeApi.MethodReady = true
 
@@ -2276,8 +2296,9 @@ return function(ctx)
 				openStealPanelImpl()
 			end
 
-			if flag4 and windowFrame and not flag6 then
-				openStealPanel(true)
+			openStealPanel(true)
+			if win and win.frame then
+				win.frame.Visible = true
 			end
 		end
 	end
