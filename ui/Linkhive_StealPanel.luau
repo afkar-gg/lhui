@@ -15,6 +15,9 @@ return function(ctx)
 	local drag = ui.drag
 	local TweenService = ui.Tween or game:GetService("TweenService")
 	local UIS = (ctx.services and ctx.services.UserInputService) or game:GetService("UserInputService")
+	-- A module runs in its own chunk, so bare service globals are nil here.
+	local RunService = (ctx.services and ctx.services.RunService) or game:GetService("RunService")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
 	local newSignalList = ui.newSignalList or function() return {Connect = function() return {Disconnect = function() end} end, Fire = function() end} end
 	local store = ctx.store or {}
 	local setStored = ctx.setStored or function() end
