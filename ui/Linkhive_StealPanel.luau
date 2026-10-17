@@ -339,13 +339,19 @@ return function(ctx)
 
 	do
 		local c3 = Color3.fromRGB
-		local function moonStyle(style, a, b, strokeColor, fill)
+		-- Active/selected states must read as part of the yellow Linkhive theme, not as a
+		-- dark brown slab: amber fill + dark ink, and a brown accent border for contrast.
+		local ACTIVE_FILL = c3(255, 208, 46)
+		local ACTIVE_INK = c3(43, 31, 0)
+		local SOFT_FILL = c3(255, 233, 168)
+		local SOFT_INK = c3(92, 66, 0)
+		local function moonStyle(style, a, b, strokeColor, fill, midTint)
 			style.Color = ColorSequence.new(a, b)
 			style.Rotation = 0
 			style.Stroke = strokeColor
 			style.StrokeSeq = ColorSequence.new({
 				ColorSequenceKeypoint.new(0, strokeColor),
-				ColorSequenceKeypoint.new(0.5, strokeColor:Lerp(c3(58, 42, 0), 0.65)),
+				ColorSequenceKeypoint.new(0.5, strokeColor:Lerp(midTint or c3(58, 42, 0), 0.65)),
 				ColorSequenceKeypoint.new(1, strokeColor),
 			})
 			style.Fill = fill or c3(0, 0, 0)
@@ -353,9 +359,9 @@ return function(ctx)
 		end
 		local UC = ui.C
 		moonStyle(stealStyles.Hud, UC.TEXT, UC.TEXT, UC.BORDER, UC.DEEP1)
-		moonStyle(stealStyles.Steal, UC.MOONTEXT, UC.MOONTEXT, UC.MOON, UC.MOON)
+		moonStyle(stealStyles.Steal, ACTIVE_INK, ACTIVE_INK, UC.MOON, ACTIVE_FILL, c3(199, 148, 0))
 		moonStyle(stealStyles.Queued, UC.TEXT, UC.SILVER, UC.BORDER, UC.ROW)
-		moonStyle(stealStyles.PriorityOn, UC.MOON2, UC.MOON2, UC.MOON, UC.DEEP2)
+		moonStyle(stealStyles.PriorityOn, SOFT_INK, SOFT_INK, UC.BORDER, SOFT_FILL, c3(199, 148, 0))
 		moonStyle(stealStyles.Cancel, UC.RED, UC.RED, UC.RED, UC.DEEP1)
 
 		LinkhiveLib.ThemeHooks[#LinkhiveLib.ThemeHooks + 1] = function(mapColor, mapSeq)
